@@ -16,12 +16,22 @@ enum NodeTypes
     IndexArray,
     Material
 };
+struct Header
+{
+    char magic="FULHAX";
+    Root rootnode;
+};
 
 class Node
 {
     uint32 size; // to be able to load it quickly and skip over if needed even if the type is not implemented yet
-    uint16 type = NodeTypes::Root;
+    uint16 type;
     Node* children;
+};
+
+class Root: Node
+{
+    type=Root;
 };
 
 class TransformNode: Node
@@ -61,6 +71,7 @@ class IndexArray: Node
     uint32 numFaces;
     uint32 index[numFaces * sides];
 };
+
 class Material: Node
 {
     char name[256]; // the actual material with shaders refer to this from script/c++
