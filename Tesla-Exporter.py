@@ -55,38 +55,38 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
         self.file.write(struct.pack('Q', val))
 
     def WriteDoubleArray(self, val):
-        self.file.write(struct.pack('d'*len(val), *val))
+        self.file.write(struct.pack('d' * len(val), *val))
 
     def WriteFloatArray(self, val):
-        self.file.write(struct.pack('f'*len(val), *val))
+        self.file.write(struct.pack('f' * len(val), *val))
 
     def WriteInt8Array(self, val):
-        self.file.write(struct.pack('b'*len(val), *val))
+        self.file.write(struct.pack('b' * len(val), *val))
 
     def WriteUInt8Array(self, val):
-        self.file.write(struct.pack('B'*len(val), *val))
+        self.file.write(struct.pack('B' * len(val), *val))
 
     def WriteInt16Array(self, val):
-        self.file.write(struct.pack('h'*len(val), *val))
+        self.file.write(struct.pack('h' * len(val), *val))
 
     def WriteUInt16Array(self, val):
-        self.file.write(struct.pack('H'*len(val), *val))
+        self.file.write(struct.pack('H' * len(val), *val))
 
     def WriteInt32Array(self, val):
-        self.file.write(struct.pack('i'*len(val), *val))
+        self.file.write(struct.pack('i' * len(val), *val))
 
     def WriteUInt32Array(self, val):
-        self.file.write(struct.pack('I'*len(val), *val))
+        self.file.write(struct.pack('I' * len(val), *val))
 
     def WriteInt64Array(self, val):
-        self.file.write(struct.pack('q'*len(val), *val))
+        self.file.write(struct.pack('q' * len(val), *val))
 
     def WriteUInt64Array(self, val):
-        self.file.write(struct.pack('Q'*len(val), *val))
+        self.file.write(struct.pack('Q' * len(val), *val))
 
     def execute(self, context):
         self.file = open(self.filepath, "wb")
-        values=[0.0,51.2,10.515151,51.0]
+        values = [0.0, 51.2, 10.515151, 51.0]
         self.WriteFloat(values[0])
         self.WriteFloat(values[1])
         self.WriteFloat(values[2])
