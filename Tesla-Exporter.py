@@ -84,9 +84,19 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
     def WriteUInt64Array(self, val):
         self.file.write(struct.pack('Q' * len(val), *val))
 
+    def WriteChars(self, text):
+        text = bytes(text, 'utf-8')
+        self.file.write(struct.pack('b'*len(text), *text))
+
+    def WriteCharsZeroTerm(self, text):
+        text = bytes(text, 'utf-8')
+        self.file.write(struct.pack('b'*len(text), *text))
+        self.file.write(struct.pack('b', 0))
+
     def execute(self, context):
         self.file = open(self.filepath, "wb")
-        values = [0.0, 51.2, 10.515151, 51.0]
+        self.WriteChars('FULHAX')
+        values = [350.51577150, 51.2, 10.515151, 51.0]
         self.WriteFloat(values[0])
         self.WriteFloat(values[1])
         self.WriteFloat(values[2])
