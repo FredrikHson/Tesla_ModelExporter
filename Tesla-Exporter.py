@@ -14,6 +14,40 @@ import struct
 from bpy_extras.io_utils import ExportHelper
 
 
+class NodeTypes:
+    Root = 0
+    Transform = 1
+    Object = 2
+    Mesh = 3
+    VertexArray = 4
+    IndexArray = 5
+    Material = 6
+
+
+class Node:
+    size = 0
+    type = 0
+    numChildren = 0
+    def WriteData(self, exporter):
+        return
+
+class NodeRoot(Node):
+    size = 8
+    type = 0
+
+
+class NodeTransform(Node):
+    type = 1
+    size = 8 + 16 * 4
+    matrix = [1.0, 0.0, 0.0, 0.0,
+              0.0, 1.0, 0.0, 0.0,
+              0.0, 0.0, 1.0, 0.0,
+              0.0, 0.0, 0.0, 1.0]
+
+    def WriteData(self, exporter):
+        exporter.WriteFloatArray(self.matrix)
+
+
 class TeslaExporter(bpy.types.Operator, ExportHelper):
     """Export to Tesla Model"""
     bl_idname = "export_scene.tesm"
@@ -86,21 +120,24 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
 
     def WriteChars(self, text):
         text = bytes(text, 'utf-8')
-        self.file.write(struct.pack('b'*len(text), *text))
+        self.file.write(struct.pack('b' * len(text), *text))
 
     def WriteCharsZeroTerm(self, text):
         text = bytes(text, 'utf-8')
-        self.file.write(struct.pack('b'*len(text), *text))
+        self.file.write(struct.pack('b' * len(text), *text))
         self.file.write(struct.pack('b', 0))
+
+    def WriteNode(self, node):
+        self.WriteUInt32(node.size)
+        self.WriteUInt16(node.type)
+        self.WriteUInt16(node.numChildren)
+        node.WriteData(node,self)
 
     def execute(self, context):
         self.file = open(self.filepath, "wb")
         self.WriteChars('FULHAX')
-        values = [350.51577150, 51.2, 10.515151, 51.0]
-        self.WriteFloat(values[0])
-        self.WriteFloat(values[1])
-        self.WriteFloat(values[2])
-        self.WriteFloatArray(values)
+        node = NodeTransform
+        self.WriteNode(node)
         self.file.close()
         return {'FINISHED'}
 
