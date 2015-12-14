@@ -10,6 +10,7 @@ bl_info = {
 
 import bpy
 import math
+import struct
 from bpy_extras.io_utils import ExportHelper
 
 
@@ -19,9 +20,14 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
     bl_label = "Export Tesla Model"
     filename_ext = ".tesm"
 
+    option_export_selection = bpy.props.BoolProperty(name = "Export Selection Only", description = "Export only selected objects", default = True)
+
+    def WriteFloat(self, val):
+        self.file.write(struct.pack('f',val))
+
     def execute(self, context):
         self.file = open(self.filepath, "wb")
-
+        self.WriteFloat(10.515151)
         self.file.close()
         return {'FINISHED'}
 
