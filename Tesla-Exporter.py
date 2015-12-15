@@ -14,6 +14,18 @@ import struct
 from bpy_extras.io_utils import ExportHelper
 
 
+def getTextSize(text):
+    return len(bytes(text, 'utf-8'))
+
+
+def getTextSizeZeroTerm(text):
+    return len(bytes(text, 'utf-8')) + 1
+
+
+def getLenTextSize(text):
+    return 4 + len(bytes(text, 'utf-8'))
+
+
 class NodeTypes:
     Root = 0
     Transform = 1
@@ -25,22 +37,22 @@ class NodeTypes:
 
 
 class Node:
-    size = 0
     type = 0
     numChildren = 0
 
     def WriteData(self, exporter):
         return
 
+    def GetSize(self):
+        return 8
+
 
 class NodeRoot(Node):
-    size = 8
     type = NodeTypes.Root
 
 
 class NodeTransform(Node):
     type = NodeTypes.Transform
-    size = 8 + 16 * 4
     matrix = [1.0, 0.0, 0.0, 0.0,
               0.0, 1.0, 0.0, 0.0,
               0.0, 0.0, 1.0, 0.0,
@@ -48,6 +60,9 @@ class NodeTransform(Node):
 
     def WriteData(self, exporter):
         exporter.WriteFloatArray(self.matrix)
+
+    def GetSize(self):
+        return 8 + 16 * 4
 
 
 class NodeVertexArray(Node):
@@ -62,6 +77,9 @@ class NodeVertexArray(Node):
         exporter.WriteUInt32(len(self.verts))
         exporter.WriteFloatArray(self.verts)
 
+    def GetSize(self):
+        return 8 + getLenTextSize(self.attrib) + 1 + 4 * len(self.verts)
+
 
 class NodeIndexArray(Node):
     type = NodeTypes.IndexArray
@@ -72,6 +90,9 @@ class NodeIndexArray(Node):
         exporter.WriteUInt8(self.sides)
         exporter.WriteUInt32(len(self.faces))
         exporter.WriteUInt32Array(self.faces)
+
+    def GetSize(self):
+        return 8 + 1 + 4 + 4 * len(self.faces)
 
 
 class TeslaExporter(bpy.types.Operator, ExportHelper):
@@ -159,10 +180,11 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
         self.file.write(struct.pack('b', 0))
 
     def WriteNode(self, node):
-        self.WriteUInt32(node.size)
+        self.WriteUInt32(node.GetSize(node))
         self.WriteUInt16(node.type)
         self.WriteUInt16(node.numChildren)
         node.WriteData(node, self)
+        self.WriteUInt16(65535)
 
     def execute(self, context):
         self.file = open(self.filepath, "wb")
