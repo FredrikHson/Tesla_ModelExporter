@@ -28,16 +28,18 @@ class Node:
     size = 0
     type = 0
     numChildren = 0
+
     def WriteData(self, exporter):
         return
 
+
 class NodeRoot(Node):
     size = 8
-    type = 0
+    type = NodeTypes.Root
 
 
 class NodeTransform(Node):
-    type = 1
+    type = NodeTypes.Transform
     size = 8 + 16 * 4
     matrix = [1.0, 0.0, 0.0, 0.0,
               0.0, 1.0, 0.0, 0.0,
@@ -46,6 +48,30 @@ class NodeTransform(Node):
 
     def WriteData(self, exporter):
         exporter.WriteFloatArray(self.matrix)
+
+
+class NodeVertexArray(Node):
+    type = NodeTypes.VertexArray
+    attrib = "unknown attribute"
+    vertlen = 3
+    verts = [0.0, 0.0, 0.0]
+
+    def WriteData(self, exporter):
+        exporter.WriteLenChars(self.attrib)
+        exporter.WriteUInt8(self.vertlen)
+        exporter.WriteUInt32(len(self.verts))
+        exporter.WriteFloatArray(self.verts)
+
+
+class NodeIndexArray(Node):
+    type = NodeTypes.IndexArray
+    sides = 3
+    faces = [0, 0, 0]
+
+    def WriteData(self, exporter):
+        exporter.WriteUInt8(self.sides)
+        exporter.WriteUInt32(len(self.faces))
+        exporter.WriteUInt32Array(self.faces)
 
 
 class TeslaExporter(bpy.types.Operator, ExportHelper):
@@ -122,6 +148,11 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
         text = bytes(text, 'utf-8')
         self.file.write(struct.pack('b' * len(text), *text))
 
+    def WriteLenChars(self, text):
+        text = bytes(text, 'utf-8')
+        self.WriteUInt32(len(text))
+        self.file.write(struct.pack('b' * len(text), *text))
+
     def WriteCharsZeroTerm(self, text):
         text = bytes(text, 'utf-8')
         self.file.write(struct.pack('b' * len(text), *text))
@@ -131,12 +162,14 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
         self.WriteUInt32(node.size)
         self.WriteUInt16(node.type)
         self.WriteUInt16(node.numChildren)
-        node.WriteData(node,self)
+        node.WriteData(node, self)
 
     def execute(self, context):
         self.file = open(self.filepath, "wb")
         self.WriteChars('FULHAX')
-        node = NodeTransform
+        node = NodeVertexArray
+        self.WriteNode(node)
+        node = NodeIndexArray
         self.WriteNode(node)
         self.file.close()
         return {'FINISHED'}

@@ -18,7 +18,7 @@ enum NodeTypes
 };
 struct Header
 {
-    char magic="FULHAX";
+    char magic = "FULHAX";
     Root rootnode;
 };
 
@@ -32,7 +32,7 @@ class Node
 
 class Root: Node
 {
-    type=Root;
+    type = Root;
 };
 
 class TransformNode: Node
@@ -44,7 +44,9 @@ class TransformNode: Node
 class VertexArray: Node
 {
     type = VertexArray;
-    char attrib[64] = "Position"; // or normal,texcoord,.....
+    uint32 attriblen;
+    char attrib[] = "Position"; // or normal,texcoord,.....
+    uint8 vertlength = 3; // number of elements per vertex 1-4
     uint32 numelements;
     float Data[numelements]; // float/int/whatever is needed by the vertex array attribute probably just floats
 };
