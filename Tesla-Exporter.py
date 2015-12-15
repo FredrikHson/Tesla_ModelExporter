@@ -95,6 +95,16 @@ class NodeIndexArray(Node):
         return 8 + 1 + 4 + 4 * len(self.faces)
 
 
+class NodeMaterial(self):
+    name = 'defaultmaterial'
+
+    def WriteData(self, exporter):
+        exporter.WriteLenChars(self.name)
+
+    def GetSize(self):
+        return 8 + getLenTextSize(name)
+
+
 class TeslaExporter(bpy.types.Operator, ExportHelper):
     """Export to Tesla Model"""
     bl_idname = "export_scene.tesm"

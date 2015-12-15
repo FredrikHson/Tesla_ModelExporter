@@ -77,5 +77,6 @@ class IndexArray: Node
 
 class Material: Node
 {
-    char name[256]; // the actual material with shaders refer to this from script/c++
+    uint32 len;
+    char name[len]; // the actual material with shaders refer to this from script/c++
 }
