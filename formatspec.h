@@ -24,7 +24,7 @@ struct Header
 
 class Node
 {
-    uint32 size; // 8 + type size to be able to load it quickly and skip over if needed even if the type is not implemented yet
+    uint32 size; // how big is it after the base node type size to be able to load it quickly and skip over if needed even if the type is not implemented yet
     uint16 type;
     uint16 numChildren;
     Node* children;

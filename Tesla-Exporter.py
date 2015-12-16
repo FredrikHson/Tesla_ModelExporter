@@ -44,7 +44,7 @@ class Node:
         return
 
     def GetSize(self):
-        return 8
+        return 0
 
 
 class NodeRoot(Node):
@@ -62,7 +62,7 @@ class NodeTransform(Node):
         exporter.WriteFloatArray(self.matrix)
 
     def GetSize(self):
-        return 8 + 16 * 4
+        return 16 * 4
 
 
 class NodeVertexArray(Node):
@@ -78,7 +78,7 @@ class NodeVertexArray(Node):
         exporter.WriteFloatArray(self.verts)
 
     def GetSize(self):
-        return 8 + getLenTextSize(self.attrib) + 1 + 4 * len(self.verts)
+        return getLenTextSize(self.attrib) + 1 + 4 + 4 * len(self.verts)
 
 
 class NodeIndexArray(Node):
@@ -92,17 +92,17 @@ class NodeIndexArray(Node):
         exporter.WriteUInt32Array(self.faces)
 
     def GetSize(self):
-        return 8 + 1 + 4 + 4 * len(self.faces)
+        return 1 + 4 + 4 * len(self.faces)
 
 
-class NodeMaterial(self):
+class NodeMaterial(Node):
     name = 'defaultmaterial'
 
     def WriteData(self, exporter):
         exporter.WriteLenChars(self.name)
 
     def GetSize(self):
-        return 8 + getLenTextSize(name)
+        return getLenTextSize(self.name)
 
 
 class TeslaExporter(bpy.types.Operator, ExportHelper):
@@ -194,7 +194,6 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
         self.WriteUInt16(node.type)
         self.WriteUInt16(node.numChildren)
         node.WriteData(node, self)
-        self.WriteUInt16(65535)
 
     def execute(self, context):
         self.file = open(self.filepath, "wb")
@@ -203,6 +202,11 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
         self.WriteNode(node)
         node = NodeIndexArray
         self.WriteNode(node)
+        node = NodeMaterial
+        self.WriteNode(node)
+        node = NodeTransform
+        self.WriteNode(node)
+
         self.file.close()
         return {'FINISHED'}
 
