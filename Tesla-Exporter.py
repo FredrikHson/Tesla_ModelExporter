@@ -97,6 +97,7 @@ class NodeIndexArray(Node):
 
 class NodeMaterial(Node):
     name = 'defaultmaterial'
+    type = NodeTypes.Material
 
     def WriteData(self, exporter):
         exporter.WriteLenChars(self.name)
@@ -205,6 +206,8 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
         node = NodeMaterial
         self.WriteNode(node)
         node = NodeTransform
+        self.WriteNode(node)
+        node = NodeMaterial
         self.WriteNode(node)
 
         self.file.close()
