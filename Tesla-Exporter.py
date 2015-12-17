@@ -37,8 +37,10 @@ class NodeTypes:
 
 
 class Node:
-    type = 0
-    numChildren = 0
+
+    def __init__(self):
+        self.type = 0
+        self.numChildren = 0
 
     def WriteData(self, exporter):
         return
@@ -52,11 +54,14 @@ class NodeRoot(Node):
 
 
 class NodeTransform(Node):
-    type = NodeTypes.Transform
-    matrix = [1.0, 0.0, 0.0, 0.0,
-              0.0, 1.0, 0.0, 0.0,
-              0.0, 0.0, 1.0, 0.0,
-              0.0, 0.0, 0.0, 1.0]
+
+    def __init__(self):
+        Node.__init__(self)
+        self.type = NodeTypes.Transform
+        self.matrix = [1.0, 0.0, 0.0, 0.0,
+                       0.0, 1.0, 0.0, 0.0,
+                       0.0, 0.0, 1.0, 0.0,
+                       0.0, 0.0, 0.0, 1.0]
 
     def WriteData(self, exporter):
         exporter.WriteFloatArray(self.matrix)
@@ -66,10 +71,13 @@ class NodeTransform(Node):
 
 
 class NodeVertexArray(Node):
-    type = NodeTypes.VertexArray
-    attrib = "unknown attribute"
-    vertlen = 3
-    verts = [0.0, 0.0, 0.0]
+
+    def __init__(self):
+        Node.__init__(self)
+        self.type = NodeTypes.VertexArray
+        self.attrib = "unknown attribute"
+        self.vertlen = 3
+        self.verts = []
 
     def WriteData(self, exporter):
         exporter.WriteLenChars(self.attrib)
@@ -80,11 +88,18 @@ class NodeVertexArray(Node):
     def GetSize(self):
         return getLenTextSize(self.attrib) + 1 + 4 + 4 * len(self.verts)
 
+    def AppendVertex(self, vert=[]):
+        for v in vert:
+            self.verts.append(v)
+
 
 class NodeIndexArray(Node):
-    type = NodeTypes.IndexArray
-    sides = 3
-    faces = [0, 0, 0]
+
+    def __init__(self):
+        Node.__init__(self)
+        self.type = NodeTypes.IndexArray
+        self.sides = 3
+        self.faces = []
 
     def WriteData(self, exporter):
         exporter.WriteUInt8(self.sides)
@@ -94,10 +109,17 @@ class NodeIndexArray(Node):
     def GetSize(self):
         return 1 + 4 + 4 * len(self.faces)
 
+    def AppendFace(self, face=[]):
+        for f in face:
+            self.faces.append(f)
+
 
 class NodeMaterial(Node):
-    name = 'defaultmaterial'
-    type = NodeTypes.Material
+
+    def __init__(self):
+        Node.__init__(self)
+        self.name = 'defaultmaterial'
+        self.type = NodeTypes.Material
 
     def WriteData(self, exporter):
         exporter.WriteLenChars(self.name)
@@ -191,23 +213,43 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
         self.file.write(struct.pack('b', 0))
 
     def WriteNode(self, node):
-        self.WriteUInt32(node.GetSize(node))
+        self.WriteUInt32(node.GetSize())
         self.WriteUInt16(node.type)
         self.WriteUInt16(node.numChildren)
-        node.WriteData(node, self)
+        node.WriteData(self)
 
     def execute(self, context):
         self.file = open(self.filepath, "wb")
         self.WriteChars('FULHAX')
-        node = NodeVertexArray
+
+        node = NodeVertexArray()
+        node.attrib = "TexCoord0"
+        node.vertlen = 2
+        node.AppendVertex([0.1, 0.1])
+        node.AppendVertex([0.5, 3.1])
+        node.AppendVertex([0.5, 2.1])
         self.WriteNode(node)
-        node = NodeIndexArray
+
+        node = NodeVertexArray()
+        node.attrib = "Position"
+        node.vertlen = 4
+        node.AppendVertex([1.1, 0.3, 0.5, 0.1])
+        node.AppendVertex([2.1, 2.3, 0.5, 3.1])
+        node.AppendVertex([3.1, 3.3, 0.5, 2.1])
         self.WriteNode(node)
-        node = NodeMaterial
+
+        node = NodeIndexArray()
+        node.AppendFace([0, 1, 2])
+        node.AppendFace([1, 2, 3])
         self.WriteNode(node)
-        node = NodeTransform
+
+        node = NodeMaterial()
         self.WriteNode(node)
-        node = NodeMaterial
+
+        node = NodeTransform()
+        self.WriteNode(node)
+
+        node = NodeMaterial()
         self.WriteNode(node)
 
         self.file.close()
