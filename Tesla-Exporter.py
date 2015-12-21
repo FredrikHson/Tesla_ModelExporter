@@ -218,9 +218,23 @@ class TeslaExporter(bpy.types.Operator, ExportHelper):
         self.WriteUInt16(node.numChildren)
         node.WriteData(self)
 
+    def HandleObject(self, object, handledParents=False):
+        if(object.parent):
+            self.HandleObject(object.parent)
+        node = NodeMaterial()
+        node.name = object.name
+        self.WriteNode(node)
+
     def execute(self, context):
         self.file = open(self.filepath, "wb")
         self.WriteChars('FULHAX')
+
+        self.exportAll = not self.option_export_selection
+
+        scene = context.scene
+        for object in scene.objects:
+            if (self.exportAll or object.select):
+                self.HandleObject(object)
 
         node = NodeVertexArray()
         node.attrib = "TexCoord0"
