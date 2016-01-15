@@ -1,5 +1,6 @@
 #!/usr/local/bin/env python3
 
+from random import randint
 
 class vertex:
     __slots__ = ("x", "y", "z")
@@ -24,21 +25,10 @@ class vertex:
     def __hash__(self):
         return hash((self.x, self.y, self.z))
 
-a = [vertex(), vertex(1, 2, 3),
-     vertex(1, 2, 3),
-     vertex(1, 2, 3),
-     vertex(1, 2, 3),
-     vertex(1, 4, 3),
-     vertex(2, 2, 3),
-     vertex(3, 2, 3),
-     vertex(1, 4, 3),
-     vertex(2, 2, 3),
-     vertex(3, 2, 3),
-     vertex(1, 4, 3),
-     vertex(2, 2, 3),
-     vertex(3, 2, 3),
-     vertex(1, 2, 3)
-     ]
+a = []
+for i in range(0,10000):
+    a.append(vertex(randint(0,10),randint(0,10),randint(0,100)))
+
 print(len(a))
 for b in a:
     print(b)
@@ -52,3 +42,6 @@ for b in c:
 d=[{s:i for i, s in enumerate(c)}[s] for s in a]
 for i,b in enumerate(d):
     print("oldindex %s new index %s %s"%(i,b,c[b]))
+
+print("input:%i"%(len(a)))
+print("output:%i"%(len(c)))
