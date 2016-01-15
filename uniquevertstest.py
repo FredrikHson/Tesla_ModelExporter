@@ -38,8 +38,11 @@ c = list(set(a))
 print(len(c))
 for b in c:
     print(b)
+print("debug")
 
-d=[{s:i for i, s in enumerate(c)}[s] for s in a]
+keys={s:i for i,s in enumerate(c)}
+d=[keys[s] for s in a]
+print("done making indices")
 for i,b in enumerate(d):
     print("oldindex %s new index %s %s"%(i,b,c[b]))
 
