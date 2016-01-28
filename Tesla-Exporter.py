@@ -26,6 +26,73 @@ def getLenTextSize(text):
     return 4 + len(bytes(text, 'utf-8'))
 
 
+class Vertex:
+    __slots__ = (
+        "pos_x", "pos_y", "pos_z",
+        "normal_x", "normal_y", "normal_z",
+        "tangent_x", "tangent_y", "tangent_z",
+        "binormal_sign",
+        "texcoord0_x", "texcoord0_y"
+    )
+
+    def __init__(self, pos_x=0, pos_y=0, pos_z=0,
+                 normal_x=0, normal_y=0, normal_z=0,
+                 tangent_x=0, tangent_y=0, tangent_z=0,
+                 binormal_sign=1,
+                 texcoord0_x=0, texcoord0_y=0):
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.pos_z = pos_z
+        self.normal_x = normal_x
+        self.normal_y = normal_y
+        self.normal_z = normal_z
+        self.tangent_x = tangent_x
+        self.tangent_y = tangent_y
+        self.tangent_z = tangent_z
+        self.texcoord0_x = texcoord0_x
+        seff.texcoord0_y = texcoord0_y
+        self.binormal_sign = binormal_sign
+
+    def __str__(self):
+        return "X:{0} Y:{1} Z:{2}".format(self.pos_x, self.pos_y, self.pos_z)
+
+    def __eq__(self, other):
+        if self.pos_x != other.pos_x:
+            return False
+        if self.pos_y != other.pos_y:
+            return False
+        if self.pos_z != other.pos_z:
+            return False
+        if self.normal_x != other.normal_x:
+            return False
+        if self.normal_y != other.normal_y:
+            return False
+        if self.normal_z != other.normal_z:
+            return False
+        if self.tangent_x != other.tangent_x:
+            return False
+        if self.tangent_y != other.tangent_y:
+            return False
+        if self.tangent_z != other.tangent_z:
+            return False
+        if self.binormal_sign != other.binormal_sign:
+            return False
+        if self.texcoord0_x != other.texcoord0_x:
+            return False
+        if self.texcoord0_y != other.texcoord0_y:
+            return False
+        return True
+
+    def __hash__(self):
+        return hash((
+            self.pos_x, self.pos_y, self.pos_z,
+            self.normal_x, self.normal_y, self.normal_z,
+            self.tangent_x, self.tangent_y, self.tangent_z,
+            self.texcoord0_x, seff.texcoord0_y,
+            self.binormal_sign
+        ))
+
+
 class NodeTypes:
     Root = 0
     Transform = 1
@@ -129,6 +196,7 @@ class NodeMaterial(Node):
 
 
 class TeslaExporter(bpy.types.Operator, ExportHelper):
+
     """Export to Tesla Model"""
     bl_idname = "export_scene.tesm"
     bl_label = "Export Tesla Model"
