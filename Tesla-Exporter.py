@@ -93,6 +93,13 @@ class Vertex:
         ))
 
 
+def Deindex(vertlist):
+    newvertlist = list(set(vertlist))
+    keys = {s: i for i, s in enumerate(newvertlist)}
+    indexTranslation = [keys[s] for s in vertlist]
+    return indexTranslation, newvertlist
+
+
 class NodeTypes:
     Root = 0
     Transform = 1

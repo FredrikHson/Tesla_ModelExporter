@@ -2,6 +2,7 @@
 
 from random import randint
 
+
 class vertex:
     __slots__ = ("x", "y", "z")
 
@@ -26,25 +27,39 @@ class vertex:
         return hash((self.x, self.y, self.z))
 
 a = []
-for i in range(0,10000):
-    a.append(vertex(randint(0,10),randint(0,10),randint(0,100)))
+for i in range(0, 10000):
+    a.append(vertex(randint(0, 10), randint(0, 10), randint(0, 100)))
 
 print(len(a))
 for b in a:
     print(b)
 
-print("set")
-c = list(set(a))
-print(len(c))
-for b in c:
-    print(b)
-print("debug")
+# print("set")
+# c = list(set(a))
+# print(len(c))
+# for b in c:
+    # print(b)
+# print("debug")
 
-keys={s:i for i,s in enumerate(c)}
-d=[keys[s] for s in a]
-print("done making indices")
-for i,b in enumerate(d):
-    print("oldindex %s new index %s %s"%(i,b,c[b]))
+# keys={s:i for i,s in enumerate(c)}
+# d=[keys[s] for s in a]
+# print("done making indices")
+# for i,b in enumerate(d):
+    # print("oldindex %s new index %s %s"%(i,b,c[b]))
 
-print("input:%i"%(len(a)))
-print("output:%i"%(len(c)))
+# print("input:%i"%(len(a)))
+# print("output:%i"%(len(c)))
+
+
+def Deindex(vertlist):
+    newvertlist = list(set(vertlist))
+    keys = {s: i for i, s in enumerate(newvertlist)}
+    indexTranslation = [keys[s] for s in vertlist]
+    i = 0
+    for b in indexTranslation:
+        print("oldindex %s new index %s %s" % (i, b, newvertlist[b]))
+        i += 1
+    print("input:%i" % (len(vertlist)))
+    print("output:%i" % (len(newvertlist)))
+
+Deindex(a)
