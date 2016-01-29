@@ -50,7 +50,7 @@ class Vertex:
         self.tangent_y = tangent_y
         self.tangent_z = tangent_z
         self.texcoord0_x = texcoord0_x
-        seff.texcoord0_y = texcoord0_y
+        self.texcoord0_y = texcoord0_y
         self.binormal_sign = binormal_sign
 
     def __str__(self):
@@ -88,7 +88,7 @@ class Vertex:
             self.pos_x, self.pos_y, self.pos_z,
             self.normal_x, self.normal_y, self.normal_z,
             self.tangent_x, self.tangent_y, self.tangent_z,
-            self.texcoord0_x, seff.texcoord0_y,
+            self.texcoord0_x, self.texcoord0_y,
             self.binormal_sign
         ))
 
